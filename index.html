@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GE-9 Ethics Reviewer and 100-Item Quiz</title>
+  <style>
+    :root {
+      --ink: #1d2433;
+      --muted: #667085;
+      --line: #d8dee8;
+      --paper: #fbfcfe;
+      --panel: #ffffff;
+      --brand: #11615c;
+      --brand-2: #7b4f1d;
+      --good: #157347;
+      --bad: #b42318;
+      --soft-good: #eaf7ef;
+      --soft-bad: #fff0ed;
+      --focus: #e8f3f1;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #eef2f6;
+      line-height: 1.5;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 14px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 1.1rem;
+      letter-spacing: 0;
+    }
+
+    .title p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button, .nav-button {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--panel);
+      color: var(--ink);
+      padding: 9px 12px;
+      font: inherit;
+      cursor: pointer;
+      transition: 0.16s ease;
+    }
+
+    button:hover, .nav-button:hover {
+      border-color: #8ea7a3;
+      background: #f8fbfb;
+    }
+
+    button.primary {
+      border-color: var(--brand);
+      background: var(--brand);
+      color: white;
+    }
+
+    button.primary:hover { background: #0c514d; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 24px auto 56px;
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .band {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      align-items: center;
+      background: linear-gradient(120deg, #ffffff, #edf7f4);
+    }
+
+    .hero h2 {
+      margin: 0 0 8px;
+      font-size: clamp(1.65rem, 3vw, 2.35rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .hero p, .band p { color: var(--muted); }
+    .hero p { margin: 0; max-width: 64ch; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.5rem;
+      color: var(--brand);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .topic {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .topic h3, .quiz-card h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .topic ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #344054;
+    }
+
+    .paper-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .paper {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .paper img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      display: block;
+      background: #e9edf3;
+    }
+
+    .paper a {
+      display: block;
+      color: var(--ink);
+      text-decoration: none;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      overflow-wrap: anywhere;
+    }
+
+    .quiz-shell {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .quiz-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .progress {
+      height: 10px;
+      background: #e6ebf1;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 12px 0 16px;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--brand);
+      transition: width 0.2s ease;
+    }
+
+    .question {
+      font-size: 1.18rem;
+      font-weight: 700;
+      margin: 8px 0 14px;
+    }
+
+    .choices {
+      display: grid;
+      gap: 10px;
+    }
+
+    .choice {
+      width: 100%;
+      text-align: left;
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .choice .letter {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #eef3f7;
+      font-weight: 700;
+      color: #344054;
+    }
+
+    .choice.correct {
+      border-color: #98d7b4;
+      background: var(--soft-good);
+    }
+
+    .choice.wrong {
+      border-color: #f2a69b;
+      background: var(--soft-bad);
+    }
+
+    .feedback {
+      margin-top: 14px;
+      border-radius: 8px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: var(--focus);
+      display: none;
+    }
+
+    .feedback.show { display: block; }
+    .feedback strong { display: block; margin-bottom: 4px; }
+
+    .result-list {
+      max-height: 420px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .result-row {
+      display: grid;
+      grid-template-columns: 56px 1fr 70px;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.9rem;
+    }
+
+    .result-row:last-child { border-bottom: 0; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 24px;
+      border-radius: 999px;
+      padding: 3px 9px;
+      background: #f0f3f7;
+      color: #344054;
+      font-size: 0.8rem;
+    }
+
+    .note {
+      border-left: 4px solid var(--brand-2);
+      padding: 10px 12px;
+      background: #fff8ee;
+      color: #4f3421;
+      border-radius: 0 8px 8px 0;
+    }
+
+    @media (max-width: 860px) {
+      .topbar, .hero, .quiz-shell { grid-template-columns: 1fr; }
+      .topbar { display: grid; }
+      nav { justify-content: start; }
+      .grid, .stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="title">
+        <h1>GE-9 Ethics Reviewer</h1>
+        <p>100-item practice quiz with instant answer reveal</p>
+      </div>
+      <nav>
+        <button class="nav-button" data-view="reviewer">Reviewer</button>
+        <button class="nav-button primary" data-view="quiz">Take Quiz</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="reviewer" class="section active">
+      <div class="band hero">
+        <div>
+          <h2>Review the core ethics concepts from the scanned test papers.</h2>
+          <p>The notes below follow the exam themes: moral standards, human acts, modifiers, Kohlberg, Kierkegaard, Scheler, Aristotle, Aquinas, Kant, and utilitarianism.</p>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>100</strong><span>quiz items</span></div>
+          <div class="stat"><strong>A-D</strong><span>multiple choice</span></div>
+          <div class="stat"><strong>16</strong><span>source scans</span></div>
+        </div>
+      </div>
+
+      <div class="band note">
+        The quiz bank is topic-based from the papers. The scans are included below so students can compare the reviewer with the original printed items.
+      </div>
+
+      <div class="band">
+        <h2>Reviewer Notes</h2>
+        <div class="grid" id="topics"></div>
+      </div>
+
+      <div class="band">
+        <h2>Original Test Papers</h2>
+        <p>Open any scan for closer reading while reviewing.</p>
+        <div class="paper-grid" id="papers"></div>
+      </div>
+    </section>
+
+    <section id="quiz" class="section">
+      <div class="quiz-shell">
+        <aside class="quiz-card">
+          <h3>Attempt</h3>
+          <p id="attemptInfo">Ready for a new randomized attempt.</p>
+          <div class="progress"><span id="progressBar"></span></div>
+          <p><strong id="scoreText">Score: 0 / 0</strong></p>
+          <button class="primary" id="startBtn">Start / Retake Quiz</button>
+        </aside>
+
+        <div class="quiz-card" id="quizPanel">
+          <span class="tag" id="topicTag">Practice mode</span>
+          <div class="question" id="questionText">Press Start / Retake Quiz to begin. Every attempt shuffles the 100 questions.</div>
+          <div class="choices" id="choices"></div>
+          <div class="feedback" id="feedback"></div>
+          <div style="margin-top: 14px;">
+            <button class="primary" id="nextBtn" disabled>Next Item</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="band" id="resultsBand" style="display:none;">
+        <h2>Quiz Summary</h2>
+        <p id="finalScore"></p>
+        <div class="result-list" id="resultList"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const papers = [
+      "att.mSvPDheKSBYUvdpcKYK-x6N0h5-0w3lrXgWKHs32DPc.jpg",
+      "att.u0Rx1v5k3AdvBcETyZ49iaWw6D40ybw3adAUKPphwwI.jpg",
+      "att.8AIBwXulCSffC7uvYF2FbwPWGri3gUXYvk5Un5QvBFU.jpg",
+      "att.85WKjKbQxuSXj9DGbsEA_HNWk9Bw3O4Dp8_1VgbBM3M.jpg",
+      "att.tVoGROlBFa0FiJUO5HPLQbSoBhjNHsXephE_mmeYa38.jpg",
+      "att.bIpfxwLiIjKD4OwKnwBqnmg9ZSrn6cVMh95e1j2vUoM.jpg",
+      "att.UFhVoyIq-FL0BuezJujQsqbOyUJJDmULupzEsBiVRGA.jpg",
+      "att.WTe41I90tKnzFOm7FRcPWxupbduMFaM9P2W05Jd_DZc.jpg",
+      "att.-xY64kCTF_rU_pwfz99KtV8OGcr4Ws9ICdn5pVItB6A.jpg",
+      "att.BKGQVTO36_-BykybHJFZVbbhkeLCLsc7-I934FOvAHI.jpg",
+      "att.YaC0YBZvFGNGIrOR9tQKhZkXSzSanYMmdURYXYPBOyU.jpg",
+      "att.U7W2GjYWmkPqx91yIACB55oZ1io-4_vYSVgD--AkH6g.jpg",
+      "att.MfuUXjJZ5HJQ6m3DTxDEXFbQPRHgxING6LlTKbJsDOA.jpg",
+      "att.IR7Dnvs96H0LALObugKk-WGx4a9Wh7kjOFfA2MszDMA.jpg",
+      "att.CXbR5S6UJGv1kGo04hK0jZMsFS-vX_LJ9PhYLepQFC0.jpg",
+      "att.UNdEtHaHkOlw_NiKLGG4gXN82RK3fKPqKtms4npDtgU.jpg"
+    ];
+
+    const topics = [
+      ["Moral Standards and Norms", ["Moral norms judge right and wrong conduct.", "Aesthetic norms judge beauty, taste, and sensory approval.", "Technical norms judge proper method in a craft or skill.", "Societal norms and etiquette protect social order and group cohesion."]],
+      ["Relativism, Skepticism, Nihilism", ["Ethical relativism links moral judgment to cultural context.", "Moral skepticism says objective moral truth may be unknowable.", "Moral nihilism denies objective moral truth.", "A stronger moral argument often appeals to serious harms such as murder or rape."]],
+      ["Human Acts", ["Human acts involve knowledge, freedom, and consent.", "Acts of man are natural or automatic acts such as blinking or breathing.", "Voluntariness can be direct, indirect, perfect, imperfect, or conditional.", "A person may be responsible for foreseeable effects of a voluntary act."]],
+      ["Modifiers of Human Acts", ["Invincible ignorance destroys voluntariness.", "Vincible ignorance lessens but does not destroy voluntariness.", "Affected ignorance is willed ignorance and can increase responsibility.", "Fear, violence, habit, and concupiscence can modify responsibility."]],
+      ["Kohlberg and Kierkegaard", ["Kohlberg describes moral development from punishment avoidance to principled reasoning.", "Authority-maintaining morality respects law and order.", "Kierkegaard's aesthetic stage seeks pleasure; ethical stage follows social duty; religious stage centers faith.", "Teleological suspension of the ethical belongs to Kierkegaard's religious stage."]],
+      ["Scheler's Values", ["Scheler ranks values from sensory to vital, spiritual, and holy.", "Higher values bring deeper and more lasting fulfillment.", "A hierarchy of values helps explain why some goods outrank comfort or pleasure.", "A person may choose lower values, but higher values are preferred morally."]],
+      ["Natural Law", ["Aquinas connects morality with reason, human nature, and the eternal law.", "Eternal law refers to the divine order or grand design of the universe.", "Natural law participates in eternal law through human reason.", "Positive laws are human-made and should align with natural law."]],
+      ["Kant and Deontology", ["Kantian ethics focuses on duty and the good will.", "The principle of universality asks whether a maxim can become universal law.", "Humanity must be treated as an end, never merely as a means.", "Consequences do not determine the moral worth of a Kantian act."]],
+      ["Utilitarianism", ["Bentham emphasizes quantity of pleasure and the greatest happiness principle.", "Mill distinguishes higher and lower pleasures and emphasizes quality.", "Utilitarian judgment focuses on consequences.", "Kant criticizes utilitarianism because consequences can be outside the agent's control."]],
+      ["Aristotle and Virtue", ["Virtue ethics focuses on the character of the doer.", "Arete means excellence.", "Virtue is developed through habit and moderation.", "For Aristotle, virtue is the mean between two vices."]]
+    ];
+
+    const quizBank = [
+      q("Moral Standards", "Which standard evaluates whether an act is morally right or wrong?", ["Aesthetic norm", "Technical norm", "Moral norm", "Fashion norm"], 2, "Moral norms concern rightness and wrongness of human conduct."),
+      q("Moral Standards", "Which is an example of an aesthetic valuation?", ["Relaxing music", "Paying debt", "Telling the truth", "Keeping a promise"], 0, "Aesthetic valuation is about beauty, taste, or sensory appreciation."),
+      q("Moral Standards", "Which is best classified as a technical right?", ["Knocking before entering", "Doing crop rotation in farming", "Giving food to the needy", "Respecting parents"], 1, "Technical right concerns the proper method in an art, craft, or skill."),
+      q("Moral Standards", "Which example is etiquette rather than a moral norm?", ["Not talking while the mouth is full", "Not stealing money", "Not killing an innocent person", "Keeping a serious promise"], 0, "Etiquette governs manners and social courtesy."),
+      q("Moral Standards", "The word norm is etymologically connected with which idea?", ["Carpenter's square", "Pleasure", "Fear", "Habit"], 0, "A norm is a standard or measure, like a carpenter's square."),
+      q("Moral Standards", "Which factor affecting behavior is otherwise known as environment?", ["Nature", "Nurture", "Religion", "Character"], 1, "Nurture refers to environment and upbringing."),
+      q("Moral Standards", "Which factor affecting behavior is based on spiritual growth and union with the divine?", ["Culture", "Religion", "Nature", "Nurture"], 1, "Religion concerns spiritual values and union with the divine."),
+      q("Moral Standards", "Which factor refers to what a group holds valuable for cultivating both person and community?", ["Culture", "Biology", "Instinct", "Accident"], 0, "Culture includes shared values and practices of a community."),
+      q("Moral Standards", "Which statement best describes technical norms?", ["They judge proper procedures in doing a craft.", "They judge beauty only.", "They are always moral laws.", "They remove human freedom."], 0, "Technical norms evaluate correct procedure or skillful performance."),
+      q("Moral Standards", "Which situation can become morally relevant even if it starts as a technical matter?", ["A wrong procedure caused by bad will", "A harmless color preference", "A neutral food preference", "A random sneeze"], 0, "A technical wrong can become moral when it involves bad will or harmful negligence."),
+
+      q("Relativism", "What is the core idea of ethical relativism?", ["All values depend on cultural or social context.", "Only consequences matter.", "Only divine command matters.", "All actions are automatic."], 0, "Relativism connects moral judgment with the standards of a group or culture."),
+      q("Relativism", "Can ethical relativism automatically excuse an evil act?", ["Yes, all acts become right.", "No, social context does not erase responsibility.", "Yes, if the person enjoys it.", "No, because all cultures are identical."], 1, "Relativism may explain context, but it does not automatically remove moral responsibility."),
+      q("Relativism", "Which claim belongs to moral nihilism?", ["There is no objective moral truth.", "There is one divine law only.", "Virtue is the mean.", "Pleasure is always higher than duty."], 0, "Moral nihilism denies objective moral truth."),
+      q("Relativism", "Which claim belongs to moral skepticism?", ["Objective moral truth exists but may not be knowable.", "All moral truth is easy to know.", "Human acts never matter.", "Only laws are moral."], 0, "Moral skepticism doubts whether moral truth can be known with certainty."),
+      q("Relativism", "Which is a strong argument against extreme moral nihilism?", ["Some acts such as murder and rape cannot be treated as merely okay.", "People like different music.", "Every country has different food.", "Some rules are technical."], 0, "Serious harms challenge the idea that nothing is objectively wrong."),
+      q("Relativism", "Psychological determinism emphasizes which source of behavior?", ["Past experiences and mental conditioning", "Universal law", "The mean between extremes", "The greatest pleasure"], 0, "Psychological determinism focuses on the influence of past experiences."),
+      q("Relativism", "Biological determinism emphasizes which source of behavior?", ["Genes or hormones", "School rules", "Social courtesy", "Aesthetic taste"], 0, "Biological determinism looks to genetic or hormonal factors."),
+      q("Relativism", "Which argument challenges biological determinism?", ["It lacks sufficient conclusive evidence.", "It proves every act is free.", "It is the same as etiquette.", "It is a natural law precept."], 0, "The exam theme treats insufficient evidence as an argument against reducing acts to biology."),
+      q("Relativism", "What should be remembered when judging a cultural practice from ethical relativism?", ["Understand it in cultural context.", "Declare it automatically holy.", "Ignore all possible harm.", "Treat it as a technical norm only."], 0, "Ethical relativism asks us to consider the practice's cultural context."),
+      q("Relativism", "Which option is closest to moral egoism in an exam-cheating scenario?", ["Cheat if it benefits you and you can avoid getting caught.", "Never act for self-interest.", "Only follow eternal law.", "Choose the mean between two vices."], 0, "Moral egoism centers the agent's own benefit."),
+
+      q("Human Acts", "What makes an act a human act?", ["Knowledge, freedom, and consent", "Breathing and blinking", "Pure reflex only", "Absence of reason"], 0, "Human acts are deliberate acts of a rational person."),
+      q("Human Acts", "Which is an act of man rather than a human act?", ["Blinking", "Choosing to lie", "Donating money", "Keeping a promise"], 0, "Blinking is usually automatic and natural."),
+      q("Human Acts", "Which is an example of a voluntary natural act in the exam themes?", ["Walking", "Sneezing", "Breathing while asleep", "Involuntary seizure"], 0, "Walking can be voluntary even though it is a bodily act."),
+      q("Human Acts", "A person aims at the act itself. What kind of voluntariness is this?", ["Direct voluntariness", "Indirect voluntariness", "Invincible ignorance", "Aesthetic valuation"], 0, "Direct voluntariness concerns the intended act itself."),
+      q("Human Acts", "A person foresees a side effect of a chosen act. What concept applies?", ["Indirect voluntariness", "Etiquette", "Moral nihilism", "Technical norm"], 0, "Indirect voluntariness involves foreseeable effects that are not the main intention."),
+      q("Human Acts", "A person may be morally responsible for an indirect effect when it is:", ["Foreseeable", "Impossible to imagine", "Purely automatic", "Never connected with the act"], 0, "Foreseeable effects can carry responsibility."),
+      q("Human Acts", "Which example best fits indirect voluntary act?", ["A police shot kills a criminal and accidentally kills a nearby innocent person.", "A person blinks suddenly.", "A sleeping person snores.", "A person has no knowledge at all."], 0, "The nearby death is not the direct goal but may be a foreseeable effect."),
+      q("Human Acts", "What does moral culpability refer to?", ["Responsibility or blameworthiness for an act", "Beauty of music", "Correct farming method", "Page number of a test"], 0, "Culpability is moral responsibility for wrongdoing."),
+      q("Human Acts", "When an act is forced by external violence with due resistance, it may become:", ["Not imputable to the agent", "Always more voluntary", "Aesthetic", "A virtue"], 0, "External violence can remove imputability when the will resists."),
+      q("Human Acts", "Which is not normally a human act?", ["Playing", "Supporting a sibling", "Hurting someone physically by choice", "Blinking"], 3, "Blinking is commonly an act of man, not a deliberate human act."),
+
+      q("Ignorance", "What does invincible ignorance do to voluntariness?", ["Destroys voluntariness", "Always increases voluntariness", "Has no possible effect", "Makes an act technical"], 0, "Invincible ignorance cannot be overcome by the agent."),
+      q("Ignorance", "What does vincible ignorance do to voluntariness?", ["Lessens but does not destroy it", "Always destroys it", "Turns it aesthetic", "Makes it utilitarian"], 0, "Vincible ignorance can be corrected through ordinary diligence."),
+      q("Ignorance", "Affected ignorance is also called:", ["Willed ignorance", "Invincible ignorance", "Natural law", "Aesthetic ignorance"], 0, "Affected ignorance is deliberately maintained ignorance."),
+      q("Ignorance", "Which ignorance can be corrected through ordinary diligence?", ["Vincible ignorance", "Invincible ignorance", "Eternal ignorance", "Holy ignorance"], 0, "Vincible ignorance is avoidable or correctable."),
+      q("Ignorance", "A doctor has medical books available but refuses to consult them. What ignorance is suggested?", ["Vincible or affected ignorance", "Invincible ignorance only", "No responsibility ever", "Pure aesthetic error"], 0, "The doctor had a way to know and failed to use it."),
+      q("Ignorance", "A person does not know a bag contains drugs and had no way to know. What may apply?", ["Invincible ignorance", "Affected ignorance", "Consequent passion", "Moral egoism"], 0, "If there was no reasonable way to know, ignorance may be invincible."),
+      q("Ignorance", "A driver claims not to know a visible speed limit sign. What applies?", ["Vincible ignorance", "Invincible ignorance", "No ignorance", "Eternal law"], 0, "The driver could have known by ordinary attention."),
+      q("Ignorance", "When ignorance is deliberately chosen to avoid responsibility, it usually:", ["Increases culpability", "Destroys all responsibility", "Becomes a virtue", "Becomes aesthetic"], 0, "Willed ignorance does not excuse the agent."),
+      q("Ignorance", "Which ignorance cannot be possibly overcome given the agent's condition and capability?", ["Invincible ignorance", "Vincible ignorance", "Affected ignorance", "Technical ignorance"], 0, "Invincible ignorance is not reasonably conquerable."),
+      q("Ignorance", "A person refuses to read instructions because they do not want to know. This is closest to:", ["Affected ignorance", "Invincible ignorance", "Holy value", "Aesthetic norm"], 0, "The ignorance is willed or deliberately preserved."),
+
+      q("Modifiers", "Which modifier is involved when someone acts because of a serious threat?", ["Fear", "Habit", "Aesthetic norm", "Culture"], 0, "Fear can make an act conditionally voluntary."),
+      q("Modifiers", "Acts done from fear are usually:", ["Voluntary but conditionally involuntary", "Never imputable", "Always holy", "Aesthetic only"], 0, "The will still acts, but pressure affects voluntariness."),
+      q("Modifiers", "A kidnapped daughter's father pays ransom because he is afraid. Which modifier is at play?", ["Fear", "Technical norm", "Moral nihilism", "Eternal law"], 0, "The payment is motivated by fear."),
+      q("Modifiers", "What is antecedent concupiscence?", ["Passion that arises before the act and can lessen voluntariness", "Passion deliberately fostered after choosing", "A technical mistake", "A cultural command"], 0, "Antecedent passion precedes the act."),
+      q("Modifiers", "What is consequent concupiscence?", ["Passion stirred or fostered by the will", "Ignorance impossible to overcome", "External violence", "A stage of Kohlberg"], 0, "Consequent passion is connected with the agent's will."),
+      q("Modifiers", "An angry person slaps someone during a quarrel. Which principle is commonly applied?", ["Antecedent concupiscence lessens but does not destroy voluntariness.", "Invincible ignorance destroys all responsibility.", "Aesthetic valuation applies.", "Positive law is eternal law."], 0, "Strong emotion can lessen but not erase responsibility."),
+      q("Modifiers", "Does habit automatically destroy voluntariness?", ["No", "Yes", "Only in aesthetic acts", "Only in technical acts"], 0, "Habit does not automatically remove responsibility."),
+      q("Modifiers", "A person develops a habit of lying to avoid inconvenience. What remains true?", ["The person remains responsible.", "The lies become fully involuntary.", "The habit becomes a virtue.", "The act becomes an act of man only."], 0, "Bad habits do not erase moral responsibility."),
+      q("Modifiers", "A person involuntarily hits someone during a seizure. What principle applies?", ["Lack of control can make the act involuntary.", "The act is fully deliberate.", "The act is moral egoism.", "The act is a technical norm."], 0, "A seizure removes ordinary control."),
+      q("Modifiers", "A person laughs involuntarily from a nervous reaction. This act is best described as:", ["Involuntary due to lack of control", "Fully deliberate", "A natural law command", "An act of moral nihilism"], 0, "The person lacks direct control over the nervous reaction."),
+
+      q("Kohlberg", "Which Kohlberg stage focuses on punishment and obedience?", ["Stage 1", "Stage 3", "Stage 5", "Religious stage"], 0, "Stage 1 is punishment and obedience orientation."),
+      q("Kohlberg", "Which Kohlberg stage is called good-boy or good-girl morality?", ["Stage 3", "Stage 1", "Stage 6", "Aesthetic stage"], 0, "Stage 3 seeks approval and good relationships."),
+      q("Kohlberg", "A teacher enforces classroom rules to maintain order. Which stage is suggested?", ["Stage 4 authority-maintaining morality", "Stage 1 punishment only", "Stage 2 pleasure only", "Kierkegaard's aesthetic stage"], 0, "Stage 4 values law, order, and authority."),
+      q("Kohlberg", "A volunteer serves a community because it strengthens social bonds. Which stage best fits the exam wording?", ["Stage 5 morality of contract and democratic law", "Stage 1 punishment", "Pure egoism", "Technical right"], 0, "The scan links social good and community bonds with higher social-contract reasoning."),
+      q("Kohlberg", "Naive instrumental hedonism is usually associated with:", ["Stage 2", "Stage 4", "Stage 6", "Natural law"], 0, "Stage 2 focuses on self-interest and exchange."),
+      q("Kierkegaard", "Which Kierkegaard stage seeks gratification of the senses?", ["Aesthetic stage", "Ethical stage", "Religious stage", "Technical stage"], 0, "The aesthetic stage centers immediate pleasure."),
+      q("Kierkegaard", "Which Kierkegaard stage bases right and wrong on social norms and societal good?", ["Ethical stage", "Aesthetic stage", "Religious stage", "Biological stage"], 0, "The ethical stage emphasizes duty and social norms."),
+      q("Kierkegaard", "Which Kierkegaard stage involves faith and divine command?", ["Religious stage", "Aesthetic stage", "Stage 2", "Technical stage"], 0, "The religious stage centers faith."),
+      q("Kierkegaard", "Teleological suspension of the ethical belongs to which stage?", ["Religious stage", "Aesthetic stage", "Authority-maintaining stage", "Societal norm"], 0, "Kierkegaard uses this idea in relation to faith beyond ordinary ethical duty."),
+      q("Kierkegaard", "Which choice best contrasts aesthetic and ethical stages?", ["Pleasure versus duty", "Genes versus hormones", "Beauty versus farming", "Blinking versus breathing"], 0, "The aesthetic stage seeks pleasure; the ethical stage follows duty."),
+
+      q("Values", "Who is associated with the hierarchy of values in the test topics?", ["Max Scheler", "Bentham", "Kant", "Darwin"], 0, "Scheler is known for a hierarchy of values."),
+      q("Values", "What is Scheler's view of higher values?", ["They produce deeper inner satisfaction.", "They are always sensory.", "They are the same as pleasure only.", "They are never preferred."], 0, "Higher values are deeper and more lasting."),
+      q("Values", "Which is higher than sensory pleasure in Scheler's hierarchy?", ["Spiritual value", "Mere comfort", "Taste preference", "Random appetite"], 0, "Spiritual values rank above sensory values."),
+      q("Values", "A person chooses rehabilitation over mere punishment for a minor offender. This reflects:", ["Preferring development or vital values over punitive response", "Choosing aesthetic taste only", "Biological determinism", "Moral nihilism"], 0, "The exam frames rehabilitation as a higher value than simple punishment."),
+      q("Values", "A donation made mainly for public recognition primarily reflects:", ["A lower or self-regarding value", "Pure holy value", "Invincible ignorance", "Technical right"], 0, "Recognition points toward a lower motive than genuine charity."),
+      q("Values", "Which value level concerns comfort, taste, or bodily pleasure?", ["Sensory value", "Spiritual value", "Holy value", "Moral law"], 0, "Sensory values concern pleasure and bodily satisfaction."),
+      q("Values", "Which value level concerns life and development?", ["Vital value", "Sensory value", "Aesthetic value", "Technical value"], 0, "Vital values concern life, health, and development."),
+      q("Values", "Which value level is often connected with truth, justice, and beauty?", ["Spiritual value", "Sensory value", "Habit", "Fear"], 0, "Spiritual values include truth, justice, and beauty."),
+      q("Values", "Which statement best describes hierarchy of values?", ["Some values are higher and should be preferred over lower ones.", "All values are equal in every sense.", "Only sensory values matter.", "Values are just page numbers."], 0, "Scheler argues values are ordered in a hierarchy."),
+      q("Values", "When a person chooses truth over comfort, the person prefers:", ["A higher value over a lower value", "A lower value over a higher value", "A technical norm over all morality", "An act of man"], 0, "Truth is a higher value than mere comfort."),
+
+      q("Natural Law", "Who is most closely associated with natural law in the exam topics?", ["Thomas Aquinas", "Jeremy Bentham", "John Stuart Mill", "Kierkegaard"], 0, "Aquinas is central to natural law theory."),
+      q("Natural Law", "What is eternal law?", ["The divine order or grand design of the universe", "A school memo", "A technical procedure", "A fashion preference"], 0, "Eternal law refers to the divine rational ordering of all things."),
+      q("Natural Law", "Natural law is best understood as:", ["Participation of human reason in eternal law", "Any human-made rule", "Only a legal code", "A denial of morality"], 0, "Natural law is knowable by reason and participates in eternal law."),
+      q("Natural Law", "Positive laws are:", ["Human-made laws", "Automatic reflexes", "Always eternal", "Always immoral"], 0, "Positive laws are made by human authorities."),
+      q("Natural Law", "Natural law and positive law should be:", ["Aligned", "Always opposed", "Unrelated", "Destroyed by etiquette"], 0, "Positive law should conform to natural law."),
+      q("Natural Law", "Which is not a sound natural law idea?", ["Positive laws are eternal laws written in the human heart.", "Laws guide people toward good.", "Reason helps humans know moral order.", "Human law should respect natural law."], 0, "Positive law is human-made, not identical with eternal law written in the heart."),
+      q("Natural Law", "In natural law, killing an innocent person is wrong because it:", ["Violates the good of life and the order of nature", "Is only unfashionable", "Is merely a technical error", "Is wrong only if unpopular"], 0, "Natural law protects basic human goods such as life."),
+      q("Natural Law", "Why might natural law reject prematurely ending a comatose person's life?", ["It intervenes with the due course of nature and the good of life.", "It improves public image.", "It is always technically hard.", "It creates more pleasure only."], 0, "The natural law lens emphasizes life and natural order."),
+      q("Natural Law", "Which act best fits the principle of double effect?", ["A good act with a tolerated bad effect under strict conditions", "Doing evil so good may come", "Choosing only pleasure", "Ignoring all consequences"], 0, "Double effect permits a bad side effect only under moral conditions."),
+      q("Natural Law", "Which condition belongs to double effect?", ["There must be sufficient reason for permitting the bad effect.", "The evil effect must be intended.", "The evil effect must be the main means.", "The good effect must be ignored."], 0, "A proportionately serious reason is required."),
+
+      q("Kant", "Kantian ethics is also known as:", ["Deontological ethics", "Pure hedonism", "Moral nihilism", "Biological determinism"], 0, "Kant is the major figure for deontology in the test themes."),
+      q("Kant", "What does deontology primarily emphasize?", ["Duty", "Consequences only", "Pleasure quantity only", "Technical skill"], 0, "Deontology judges acts by duty and moral law."),
+      q("Kant", "Which statement expresses Kant's principle of universality?", ["Act only on a maxim you can will as universal law.", "Always seek the most pleasure.", "Follow only local customs.", "Act only when afraid."], 0, "Universalizability is central to Kant's ethics."),
+      q("Kant", "What is Kant's humanity formulation?", ["Treat humanity always as an end and never merely as a means.", "Treat humanity as a means only.", "Treat pleasure as the only good.", "Treat nature as irrelevant."], 0, "Persons have dignity and must not be used merely as tools."),
+      q("Kant", "Which statement is not true for Kant?", ["Humanity can be treated as means only.", "Humanity must be treated as an end.", "Humanity cannot be treated as means only.", "Duty matters."], 0, "Kant rejects treating persons merely as means."),
+      q("Kant", "For Kant, what gives an action moral worth?", ["Acting from duty and good will", "Accidentally producing pleasure", "Being popular", "Looking beautiful"], 0, "Good will and duty determine moral worth."),
+      q("Kant", "Why would Kant reject cheating?", ["It cannot be willed as a universal law.", "It always creates the most utility.", "It is hard to do technically.", "It is a sensory value."], 0, "Universal cheating would undermine examination itself."),
+      q("Kant", "Why does Kant criticize utilitarianism?", ["It relies on consequences that can be outside the agent's control.", "It values duty too much.", "It denies all outcomes.", "It is the same as natural law."], 0, "Consequences can depend on luck or accident."),
+      q("Kant", "From a deontological lens, charitable action is morally good when it is:", ["Done from duty or intrinsically good will", "Done only for public praise", "Done only for pleasure", "Done accidentally while sleeping"], 0, "Deontology values right intention and duty."),
+      q("Kant", "A deontologist evaluating euthanasia would focus most on:", ["Duty to respect human dignity", "Only relief of burden", "Only legal popularity", "Only public image"], 0, "The deontological lens protects dignity and duty."),
+
+      q("Utilitarianism", "Who popularized utilitarianism according to many exam treatments?", ["Jeremy Bentham", "Immanuel Kant", "Thomas Aquinas", "Aristotle"], 0, "Bentham is a central popularizer of utilitarianism."),
+      q("Utilitarianism", "What is the basic utilitarian standard?", ["The greatest good for the greatest number", "The mean between two vices", "Universal law without consequences", "Invincible ignorance"], 0, "Utilitarianism judges by overall consequences."),
+      q("Utilitarianism", "Bentham emphasizes:", ["Quantity of pleasure", "Pure duty", "Natural law only", "The religious stage"], 0, "Bentham's utilitarianism is quantitative."),
+      q("Utilitarianism", "Mill differs from Bentham by emphasizing:", ["Quality of pleasure", "No pleasure at all", "Only genetics", "Only etiquette"], 0, "Mill distinguishes higher and lower pleasures."),
+      q("Utilitarianism", "A utilitarian captain allocating scarce lifeboats would likely focus on:", ["Saving the most lives or producing the best overall consequence", "Following etiquette only", "Avoiding all calculation", "Technical beauty"], 0, "Utilitarianism uses consequence-based calculation."),
+      q("Utilitarianism", "A utilitarian might justify cheating if:", ["It maximizes overall benefit and minimizes harm", "It violates all consequences", "It cannot be universalized", "It is ugly"], 0, "Utilitarian reasoning looks at net results, though this conclusion can be disputed."),
+      q("Utilitarianism", "Which theory is most consequence-based?", ["Utilitarianism", "Kantian deontology", "Virtue ethics", "Etiquette"], 0, "Utilitarianism is a consequentialist theory."),
+      q("Utilitarianism", "In utilitarianism, the morality of an act depends mainly on:", ["Its effects or outcomes", "The page where it appears", "Whether it is fashionable", "Whether it is automatic"], 0, "Consequences are the main basis."),
+      q("Utilitarianism", "Which phrase best fits Mill?", ["Higher pleasures can be better than lower pleasures.", "All pleasures are identical in quality.", "Duty alone determines all morality.", "Human reason cannot know anything."], 0, "Mill gives importance to qualitative differences in pleasure."),
+      q("Utilitarianism", "Which is a common criticism of utilitarianism?", ["It may sacrifice individual rights for aggregate benefit.", "It never considers outcomes.", "It denies pleasure exists.", "It is only a technical norm."], 0, "A standard criticism is that maximizing utility may threaten rights."),
+
+      q("Virtue Ethics", "Who is most associated with virtue ethics in the exam topics?", ["Aristotle", "Bentham", "Mill", "Kant"], 0, "Aristotle is the key virtue ethics figure."),
+      q("Virtue Ethics", "What is the basis of morality in virtue ethics?", ["The character of the doer", "Only consequences", "Only legal punishment", "Only technical success"], 0, "Virtue ethics asks what kind of person one becomes."),
+      q("Virtue Ethics", "What does arete mean?", ["Excellence", "Law", "Fear", "Ignorance"], 0, "Arete is Greek for excellence."),
+      q("Virtue Ethics", "For Aristotle, virtue is:", ["The mean between two vices", "One extreme only", "Impossible to practice", "The same as fear"], 0, "Virtue lies between deficiency and excess."),
+      q("Virtue Ethics", "Aristotelian happiness is achieved through:", ["Moderation", "Vindication", "Randomness", "Ignorance"], 0, "Moderation is central to virtue and flourishing."),
+      q("Virtue Ethics", "Which statement describes Aristotelian virtue?", ["It is developed through constant practice.", "It is impossible to achieve.", "It is only a written law.", "It ignores character."], 0, "Virtues are habits built through repeated action."),
+      q("Virtue Ethics", "The Greek term telos refers to:", ["End or purpose", "Fear", "Habit", "Willed ignorance"], 0, "Telos means end, goal, or purpose."),
+      q("Virtue Ethics", "Which best describes vice and virtue?", ["Virtue resides between two vices.", "Vice is always the middle.", "Virtue is one extreme.", "They are identical."], 0, "The virtuous mean avoids two vicious extremes."),
+      q("Virtue Ethics", "A generous person gives rightly, at the right time, and for the right reason. This shows:", ["Virtue as moderated habit", "Moral nihilism", "Technical error", "Invincible ignorance"], 0, "Virtue is practical wisdom and moderation in action."),
+      q("Virtue Ethics", "Which theory asks, 'What kind of person should I become?'", ["Virtue ethics", "Utilitarianism", "Biological determinism", "Moral skepticism"], 0, "Virtue ethics centers character formation.")
+    ];
+
+    function q(topic, question, choices, answer, explanation) {
+      return { topic, question, choices, answer, explanation };
+    }
+
+    let order = [];
+    let current = 0;
+    let score = 0;
+    let locked = false;
+    let history = [];
+
+    const views = document.querySelectorAll(".section");
+    const navButtons = document.querySelectorAll("[data-view]");
+    const topicsEl = document.getElementById("topics");
+    const papersEl = document.getElementById("papers");
+    const startBtn = document.getElementById("startBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const choicesEl = document.getElementById("choices");
+    const questionText = document.getElementById("questionText");
+    const feedback = document.getElementById("feedback");
+    const topicTag = document.getElementById("topicTag");
+    const attemptInfo = document.getElementById("attemptInfo");
+    const scoreText = document.getElementById("scoreText");
+    const progressBar = document.getElementById("progressBar");
+    const resultsBand = document.getElementById("resultsBand");
+    const finalScore = document.getElementById("finalScore");
+    const resultList = document.getElementById("resultList");
+
+    navButtons.forEach(button => {
+      button.addEventListener("click", () => showView(button.dataset.view));
+    });
+
+    startBtn.addEventListener("click", startQuiz);
+    nextBtn.addEventListener("click", nextQuestion);
+
+    function showView(id) {
+      views.forEach(view => view.classList.toggle("active", view.id === id));
+      navButtons.forEach(button => button.classList.toggle("primary", button.dataset.view === id));
+    }
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function startQuiz() {
+      order = shuffle(quizBank).slice(0, 100);
+      current = 0;
+      score = 0;
+      locked = false;
+      history = [];
+      resultsBand.style.display = "none";
+      attemptInfo.textContent = "Question 1 of 100. Answer each item to reveal the correct answer.";
+      scoreText.textContent = "Score: 0 / 0";
+      showView("quiz");
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const item = order[current];
+      locked = false;
+      topicTag.textContent = item.topic;
+      questionText.textContent = `${current + 1}. ${item.question}`;
+      choicesEl.innerHTML = "";
+      feedback.className = "feedback";
+      feedback.innerHTML = "";
+      nextBtn.disabled = true;
+      attemptInfo.textContent = `Question ${current + 1} of ${order.length}`;
+      progressBar.style.width = `${(current / order.length) * 100}%`;
+
+      item.choices.forEach((choice, index) => {
+        const button = document.createElement("button");
+        button.className = "choice";
+        button.innerHTML = `<span class="letter">${String.fromCharCode(65 + index)}</span><span>${choice}</span>`;
+        button.addEventListener("click", () => answerQuestion(index));
+        choicesEl.appendChild(button);
+      });
+    }
+
+    function answerQuestion(selected) {
+      if (locked) return;
+      locked = true;
+      const item = order[current];
+      const correct = selected === item.answer;
+      if (correct) score++;
+      history.push({ item, selected, correct });
+
+      [...choicesEl.children].forEach((button, index) => {
+        button.disabled = true;
+        if (index === item.answer) button.classList.add("correct");
+        if (index === selected && selected !== item.answer) button.classList.add("wrong");
+      });
+
+      const correctLetter = String.fromCharCode(65 + item.answer);
+      const selectedLetter = String.fromCharCode(65 + selected);
+      feedback.className = "feedback show";
+      feedback.innerHTML = `<strong>${correct ? "Correct." : "Not quite."}</strong>
+        Your answer: ${selectedLetter}. Correct answer: ${correctLetter}. ${item.explanation}`;
+      scoreText.textContent = `Score: ${score} / ${history.length}`;
+      nextBtn.disabled = false;
+      nextBtn.textContent = current === order.length - 1 ? "Finish Quiz" : "Next Item";
+      progressBar.style.width = `${((current + 1) / order.length) * 100}%`;
+    }
+
+    function nextQuestion() {
+      if (current >= order.length - 1) {
+        finishQuiz();
+        return;
+      }
+      current++;
+      renderQuestion();
+    }
+
+    function finishQuiz() {
+      questionText.textContent = "Quiz complete.";
+      choicesEl.innerHTML = "";
+      feedback.className = "feedback show";
+      feedback.innerHTML = `<strong>Final score: ${score} / ${order.length}</strong>Use Start / Retake Quiz for a new shuffled attempt.`;
+      nextBtn.disabled = true;
+      progressBar.style.width = "100%";
+      attemptInfo.textContent = "Attempt finished.";
+      finalScore.textContent = `You scored ${score} out of ${order.length}.`;
+      resultList.innerHTML = history.map((row, index) => {
+        const selected = String.fromCharCode(65 + row.selected);
+        const correct = String.fromCharCode(65 + row.item.answer);
+        return `<div class="result-row">
+          <span>${index + 1}</span>
+          <span>${row.item.question}</span>
+          <span>${row.correct ? "Correct" : `${selected} / ${correct}`}</span>
+        </div>`;
+      }).join("");
+      resultsBand.style.display = "block";
+    }
+
+    function renderReviewer() {
+      topicsEl.innerHTML = topics.map(([title, bullets]) => `
+        <article class="topic">
+          <h3>${title}</h3>
+          <ul>${bullets.map(item => `<li>${item}</li>`).join("")}</ul>
+        </article>
+      `).join("");
+
+      papersEl.innerHTML = papers.map((paper, index) => `
+        <article class="paper">
+          <a href="${paper}" target="_blank" rel="noopener">
+            <img src="${paper}" alt="Test paper scan ${index + 1}">
+            Scan ${index + 1}: ${paper}
+          </a>
+        </article>
+      `).join("");
+    }
+
+    renderReviewer();
+  </script>
+</body>
+</html>
